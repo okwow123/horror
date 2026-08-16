@@ -47,8 +47,5 @@ export async function GET(req: NextRequest) {
     bot: botRes.data,
     bot_configured: !!process.env.SIMYA_BOT_USER_ID,
     recent_posts: postsRes.data ?? [],
-    cron_schedule: {
-      crawl: '0 */6 * * * (6시간마다, AI 랜덤 생성)',
-    },
   });
 }

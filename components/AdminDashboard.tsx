@@ -24,7 +24,6 @@ interface Status {
     image_url: string | null;
     source_url: string | null;
   }>;
-  cron_schedule: { crawl: string };
 }
 
 function timeAgo(iso: string | null): string {
@@ -211,12 +210,9 @@ export function AdminDashboard({ initial }: { initial: Status }) {
 
       {/* Schedule */}
       <div className="bg-midnight-800 border border-midnight-700 rounded-2xl p-5 space-y-2">
-        <h3 className="text-sm font-medium text-midnight-200">자동 스케줄 (Vercel Cron)</h3>
-        <ul className="text-sm text-midnight-300 space-y-1 font-mono">
-          <li>AI 생성: <span className="text-blood-400">{status.cron_schedule.crawl}</span></li>
-        </ul>
-        <p className="text-xs text-midnight-500">
-          Hobby 플랜은 cron 1일 1회. Pro/Enterprise 가 더 자주 가능. 위의 "수동 실행" 으로 즉시 트리거 가능.
+        <h3 className="text-sm font-medium text-midnight-200">자동 스케줄</h3>
+        <p className="text-sm text-midnight-400">
+          자동 생성은 비활성화. 위의 <span className="text-blood-300">"수동 실행"</span> 으로만 AI 이야기를 게시할 수 있어.
         </p>
       </div>
     </div>

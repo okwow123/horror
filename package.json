@@ -10,8 +10,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "seed:sources": "tsx scripts/seed-sources.ts",
-    "seed:stories": "tsx scripts/seed-stories.ts",
-    "cron:trigger": "curl -sS \"http://localhost:3000/api/admin/trigger?steps=crawl,post&secret=$CRON_SECRET\" | jq"
+    "seed:stories": "tsx scripts/seed-stories.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
