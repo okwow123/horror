@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HORROR COMBO ROLLER · 조합 추출기</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #0a0a0a; color: #e8e8e8; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      padding: 60px 20px 100px;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    h1 {
+      text-align: center;
+      font-weight: 200;
+      letter-spacing: 8px;
+      font-size: 22px;
+      color: #f0f0f0;
+    }
+    .sub {
+      text-align: center;
+      color: #666;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-top: 6px;
+      margin-bottom: 50px;
+    }
+    .btn-wrap { text-align: center; margin-bottom: 50px; }
+    .btn {
+      background: #8b0000;
+      color: #fff;
+      border: 0;
+      padding: 20px 72px;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 10px;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all .2s ease;
+      font-family: inherit;
+    }
+    .btn:hover { background: #a50000; transform: translateY(-1px); box-shadow: 0 8px 20px rgba(139,0,0,.3); }
+    .btn:active { transform: translateY(0); }
+    .counter {
+      text-align: center;
+      color: #555;
+      font-size: 11px;
+      letter-spacing: 3px;
+      margin-top: 16px;
+      font-family: "SF Mono", "Menlo", monospace;
+    }
+    .empty {
+      text-align: center;
+      color: #444;
+      padding: 80px 20px;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .empty::before { content: "·  ·  ·"; display: block; letter-spacing: 12px; margin-bottom: 16px; }
+
+    .result { display: none; }
+
+    .code-line {
+      text-align: center;
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 26px;
+      letter-spacing: 6px;
+      color: #ff4444;
+      padding: 24px;
+      background: #111;
+      border: 1px solid #2a1a1a;
+      border-radius: 4px;
+      margin-bottom: 28px;
+      animation: fadeIn .4s ease;
+    }
+    .code-line .label {
+      display: block;
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 4px;
+      padding: 18px;
+      animation: fadeIn .4s ease;
+    }
+    .card .lbl {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #666;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .card .code {
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 14px;
+      color: #8b0000;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+    .card .name {
+      font-size: 16px;
+      color: #f0f0f0;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .card .desc {
+      font-size: 11px;
+      color: #777;
+      line-height: 1.5;
+    }
+    .card.level .code { color: #d4af37; }
+
+    .prompt-section { margin-top: 12px; }
+    .prompt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .prompt-header .title {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #666;
+    }
+    .copy-btn {
+      background: #1a1a1a;
+      color: #ccc;
+      border: 1px solid #2a2a2a;
+      padding: 6px 14px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border-radius: 2px;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .copy-btn:hover { background: #2a2a2a; color: #fff; }
+    .copy-btn.copied { background: #1a3a1a; color: #4ade80; border-color: #2a4a2a; }
+    .prompt-box {
+      background: #0d0d0d;
+      border: 1px solid #1a1a1a;
+      border-left: 2px solid #8b0000;
+      border-radius: 3px;
+      padding: 22px;
+      font-family: "SF Mono", "Menlo", monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #bbb;
+      white-space: pre-wrap;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    .prompt-box::-webkit-scrollbar { width: 6px; }
+    .prompt-box::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+
+    .ref {
+      text-align: center;
+      color: #444;
+      font-size: 11px;
+      letter-spacing: 1px;
+      margin-top: 32px;
+    }
+    .ref a { color: #666; text-decoration: none; border-bottom: 1px dotted #444; }
+    .ref a:hover { color: #aaa; }
+
+    @media (max-width: 700px) {
+      body { padding: 40px 16px 60px; }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .btn { padding: 16px 48px; letter-spacing: 6px; }
+      h1 { font-size: 17px; letter-spacing: 5px; }
+      .code-line { font-size: 18px; letter-spacing: 3px; padding: 18px; }
+    }
+    @media (max-width: 420px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>HORROR COMBO</h1>
+    <div class="sub">10 × 7 × 10 × 10 × 7 × 5 · RANDOM EXTRACT</div>
+    <div class="btn-wrap">
+      <button id="roll" class="btn">시 작</button>
+      <div class="counter" id="counter">ROLL · 000</div>
+    </div>
+    <div id="empty" class="empty">버튼을 눌러 6개 변수를 무작위로 조합하세요</div>
+    <div id="result" class="result">
+      <div class="code-line">
+        <span class="label">COMBINATION</span>
+        <span id="code"></span>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="prompt-section">
+        <div class="prompt-header">
+          <span class="title">LLM PROMPT · 복사해서 그대로 사용</span>
+          <button class="copy-btn" id="copy">COPY</button>
+        </div>
+        <div class="prompt-box" id="prompt"></div>
+      </div>
+    </div>
+    <div class="ref">
+      <a href="./_variables.md">_variables.md</a> · <a href="./_database.md">_database.md</a> · <a href="./_horror_level.md">_horror_level.md</a> · <a href="./_generation_rules.md">_generation_rules.md</a>
+    </div>
+  </div>
+
+  <script>
+    const SETTINGS = [
+      { code: 'A', name: '폐교',     desc: '폐쇄된 학교, 운동장, 3층 이상 금지' },
+      { code: 'B', name: '군부대',   desc: '훈련소, 통제구역, 보초 교대' },
+      { code: 'C', name: '모텔',     desc: '6인실, 복도, 13번방' },
+      { code: 'D', name: '지하철',   desc: '막차, 마지막 칸, 정거장' },
+      { code: 'E', name: '아파트',   desc: '엘리베이터, 복도, 14층' },
+      { code: 'F', name: '병원',     desc: '응급실, 5층, 봉인된 문' },
+      { code: 'G', name: '산속',     desc: '등산로, 안개, 분실' },
+      { code: 'H', name: '바닷가',   desc: '해안 마을, 어선, 횟불' },
+      { code: 'I', name: '지하주차장', desc: 'B4~B5, 환풍구, 형광등' },
+      { code: 'J', name: '편의점',   desc: '새벽 근무, 냉장고, CCTV' }
+    ];
+    const PROTAGONISTS = [
+      { code: 'A', name: '야간근무자',     desc: '새벽 근무자, 본업 외 신경 안 씀' },
+      { code: 'B', name: '군인',           desc: '신병, 보고조, 단문' },
+      { code: 'C', name: '택배기사',       desc: '야간 배송, 동네 모름' },
+      { code: 'D', name: '대학생',         desc: '10대 말투, 게임/인스타' },
+      { code: 'E', name: '경찰',           desc: '순찰, 출동, 사건' },
+      { code: 'F', name: '유튜버',         desc: '캠코더, 시청자 압박' },
+      { code: 'G', name: '직장인',         desc: '혼자 살림, 야근' }
+    ];
+    const FEAR_TYPES = [
+      { code: 'A', name: '귀신',               desc: '분명한 초자연적 존재' },
+      { code: 'B', name: '도플갱어',           desc: '나와 같은 누군가' },
+      { code: 'C', name: '시간 반복',          desc: '같은 시간, 같은 자리' },
+      { code: 'D', name: '기억 조작',          desc: '내 기억이 거짓' },
+      { code: 'E', name: '공간 왜곡',          desc: '층/방/거울이 다름' },
+      { code: 'F', name: '정체불명의 사람',    desc: '설명 안 되는 인물' },
+      { code: 'G', name: '죽은 사람의 메시지', desc: '전화/문자/물건' },
+      { code: 'H', name: '미래의 자신',        desc: '내가 나를 만남' },
+      { code: 'I', name: '존재하지 않는 사람', desc: 'CCTV에만 보임' },
+      { code: 'J', name: '자신이 자신이 아닌 상황', desc: '정체성 붕괴' }
+    ];
+    const TRIGGERS = [
+      { code: 'A', name: '전화',   desc: '발신자 없음, 벨소리' },
+      { code: 'B', name: 'CCTV',   desc: '모니터, 드론, 기록' },
+      { code: 'C', name: '거울',   desc: '반사, 시간차' },
+      { code: 'D', name: '사진',   desc: '필름, 디지털' },
+      { code: 'E', name: '녹음',   desc: '미래의 목소리' },
+      { code: 'F', name: '문',     desc: '잠긴 문, 여닫힘' },
+      { code: 'G', name: '엘리베이터', desc: '버튼, 멈춤, 층' },
+      { code: 'H', name: '문자',   desc: '낯선 번호, 알림' },
+      { code: 'I', name: '방송',   desc: '스피커, 라디오' },
+      { code: 'J', name: '꿈',     desc: '되풀이, 기억' }
+    ];
+    const ENDINGS = [
+      { code: 'A', name: '반전',                 desc: '의미가 뒤집힘' },
+      { code: 'B', name: '열린 결말',           desc: '설명 없이 끝' },
+      { code: 'C', name: '순환',                 desc: '같은 자리에 다시' },
+      { code: 'D', name: '주인공의 정체 반전', desc: '내가 누군지' },
+      { code: 'E', name: '현실-환상 경계 붕괴', desc: '둘 중 하나 못 고름' },
+      { code: 'F', name: '독자 위험 노출',     desc: '나도 따라옴' },
+      { code: 'G', name: '처음 장면과 연결',    desc: '반복, 닫힌 원' }
+    ];
+    const LEVELS = [
+      { code: 'L1', name: '불안',     desc: '이상한 소리, 사소한 시간 오류' },
+      { code: 'L2', name: '의심',     desc: 'CCTV 불일치, 존재 모를 사람' },
+      { code: 'L3', name: '공포',     desc: '누군가 따라옴, 공간 왜곡' },
+      { code: 'L4', name: '극한 공포', desc: '정체 흔들림, 현실 조작' },
+      { code: 'L5', name: '여운',     desc: '마지막 한 문장 뒤집기' }
+    ];
+
+    const VARIABLES = [
+      { key: 'Setting',     arr: SETTINGS,     short: 'Setting' },
+      { key: 'Protagonist', arr: PROTAGONISTS, short: 'Protagonist' },
+      { key: 'Fear',        arr: FEAR_TYPES,   short: 'Fear' },
+      { key: 'Trigger',     arr: TRIGGERS,     short: 'Trigger' },
+      { key: 'Ending',      arr: ENDINGS,      short: 'Ending' },
+      { key: 'Level',       arr: LEVELS,       short: 'Level', isLevel: true }
+    ];
+
+    const roll = document.getElementById('roll');
+    const result = document.getElementById('result');
+    const empty = document.getElementById('empty');
+    const codeEl = document.getElementById('code');
+    const gridEl = document.getElementById('grid');
+    const promptEl = document.getElementById('prompt');
+    const copyBtn = document.getElementById('copy');
+    const counterEl = document.getElementById('counter');
+
+    let rollCount = 0;
+    let lastCode = '';
+
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function buildPrompt(combos) {
+      const lines = [];
+      lines.push('다음 조건으로 한국식 공포 단편을 작성하라.');
+      lines.push('');
+      combos.forEach(c => {
+        lines.push(`[${c.key.padEnd(11)}] ${c.code.code} — ${c.code.name} (${c.code.desc})`);
+      });
+      lines.push('');
+      lines.push('톤: 1인칭, 주인공 직업에 맞는 목소리.');
+      lines.push('분량: 1,500~3,000자, 단편 1편.');
+      lines.push('구조: [일상] → [작은 이상] → [반복] → [의심] → [금기 발견] → [위반] → [정체 접근] → [반전] → [여운].');
+      lines.push('제외: "그날 이후 아무도 그를 보지 못했다" 같은 클리셰 결말, "사실 꿈이었다" 금지, 단순 점프스케어 금지.');
+      return lines.join('\n');
+    }
+
+    roll.addEventListener('click', () => {
+      const combos = VARIABLES.map(v => ({ key: v.key, code: pick(v.arr) }));
+      const code = combos.map(c => c.code.code).join(' · ');
+
+      rollCount++;
+      codeEl.textContent = code;
+      counterEl.textContent = `ROLL · ${String(rollCount).padStart(3, '0')}`;
+
+      gridEl.innerHTML = combos.map(c => {
+        const lvlClass = VARIABLES.find(v => v.key === c.key && v.isLevel) ? ' level' : '';
+        return `
+          <div class="card${lvlClass}">
+            <div class="lbl">${c.key}</div>
+            <div class="code">${c.code.code}</div>
+            <div class="name">${c.code.name}</div>
+            <div class="desc">${c.code.desc}</div>
+          </div>`;
+      }).join('');
+
+      promptEl.textContent = buildPrompt(combos);
+      result.style.display = 'block';
+      empty.style.display = 'none';
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const text = promptEl.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        copyBtn.textContent = 'COPIED';
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.textContent = 'COPY';
+          copyBtn.classList.remove('copied');
+        }, 1500);
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); copyBtn.textContent = 'COPIED'; copyBtn.classList.add('copied'); } catch (e) {}
+        document.body.removeChild(ta);
+        setTimeout(() => { copyBtn.textContent = 'COPY'; copyBtn.classList.remove('copied'); }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>
