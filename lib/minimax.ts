@@ -1,15 +1,14 @@
 // MiniMax (MiniMax) chat completions 래퍼.
 // stockcom 에서 사용 중인 동일 패턴을 따름.
+//
+// [2026-08-16] BASE_URL 기본값 수정
+//  - sk-cp- 로 시작하는 글로벌 Token Plan 키 → https://api.minimax.io
+//  - sk-api- 로 시작하는 CN/구 키       → https://api.minimaxi.com
+//  Vercel 환경변수에 MINIMAX_BASE_URL 안 박으면 글로벌 엔드포인트로 가도록.
 
 const API_KEY = process.env.MINIMAX_API_KEY;
 const MODEL = process.env.MINIMAX_MODEL || 'MiniMax-M3';
-const BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimaxi.com';
-
-if (!API_KEY) {
-  // 빌드 시점에는 조용히, 런타임 호출 시 throw
-  // eslint-disable-next-line no-console
-  console.warn('[minimax] MINIMAX_API_KEY is missing — story generation will fail until set');
-}
+const BASE_URL = process.env.MINIMAX_BASE_URL || 'https://api.minimax.io';
 
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant';

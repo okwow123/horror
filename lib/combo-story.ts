@@ -307,7 +307,7 @@ export async function generateStoryFromCombo(
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
     ],
-    { temperature: mode === 'instagram' ? 0.9 : 0.85, maxTokens: mode === 'instagram' ? 8000 : 16000 },
+    { temperature: mode === 'instagram' ? 0.9 : 0.85, maxTokens: mode === 'instagram' ? 4000 : 8000 },
   );
 
   if (mode === 'instagram') {
